@@ -243,13 +243,8 @@ Initialize a new `choo` instance. `opts` can also contain the following values:
   history API.
 - __opts.href:__ default: `true`. Handle all relative `<a
   href="<location>"></a>` clicks and call `emit('render')`
-- __opts.timing:__ default: `true`. Enables calls to the
-  [window.performance][window-performance] timing API. Timing calls will not
-  run in browsers that don't support it out of the box. The timing marks are
-  `choo:renderStart`, `choo:renderEnd`. The resulting diff is stored as
-  `choo:render`.
 
-### `app.use(callback(state, emitter))`
+### `app.use(callback(state, emitter, app))`
 Call a function and pass it a `state` and `emitter`. `emitter` is an instance
 of [nanobus](https://github.com/yoshuawuyts/nanobus/). You can listen to
 messages by calling `emitter.on()` and emit messages by calling `emitter.emit()`.
@@ -259,10 +254,14 @@ Choo fires messages when certain events happen:
 - __`.on('render')`__: when the DOM re-renders
 - __`.on('pushState')`__: when the history API is triggered
 
-The `render` event should be emitted (`emitter.emit('render')`) whenever you want the app to re-render the DOM - it won't happen on its own except when you navigate between routes.
+The `render` event should be emitted (`emitter.emit('render')`) whenever you
+want the app to re-render the DOM - it won't happen on its own except when you
+navigate between routes.
 
-The `pushState` can be emitted to navigate between routes: `emitted.emit('pushState', '/some/route')`.
-You can emit `replaceState` which will overwrite the current entry in the browser history, but be very careful as this removes the option of navigating back!
+The `pushState` can be emitted to navigate between routes:
+`emitted.emit('pushState', '/some/route')`.  You can emit `replaceState` which
+will overwrite the current entry in the browser history, but be very careful as
+this removes the option of navigating back!
 
 Note `render` will only have an effect once the `DOMContentLoaded` event has been fired.
 

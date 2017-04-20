@@ -24,13 +24,12 @@
   "dependencies": {
     "bel": "^4.5.1",
     "document-ready": "^2.0.1",
-    "nanobus": "^3.1.0",
-    "nanohistory": "^1.0.0",
+    "nanobus": "^4.0.0",
     "nanohref": "^1.0.0",
     "nanomorph": "^4.0.0",
-    "nanomount": "^1.0.0",
     "nanoraf": "^3.0.0",
-    "nanorouter": "^2.0.0"
+    "nanorouter": "^2.0.0",
+    "nanotiming": "^5.0.0"
   },
   "devDependencies": {
     "browserify": "^14.3.0",
