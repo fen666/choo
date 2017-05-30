@@ -13,6 +13,8 @@ function Choo (opts) {
   if (!(this instanceof Choo)) return new Choo(opts)
   opts = opts || {}
 
+  assert.equal(typeof opts, 'object', 'choo: opts should be type object')
+
   var routerOpts = {
     default: opts.defaultRoute || '/404',
     curry: true
@@ -30,6 +32,9 @@ function Choo (opts) {
 }
 
 Choo.prototype.route = function (route, handler) {
+  assert.equal(typeof route, 'string', 'choo.route: route should be type string')
+  assert.equal(typeof handler, 'function', 'choo.handler: route should be type function')
+
   var self = this
   this.router.on(route, function (params) {
     return function () {
@@ -45,6 +50,7 @@ Choo.prototype.route = function (route, handler) {
 }
 
 Choo.prototype.use = function (cb) {
+  assert.equal(typeof cb, 'function', 'choo.use: cb should be type function')
   var endTiming = nanotiming('choo.use')
   cb(this.state, this.emitter, this)
   endTiming()
@@ -82,13 +88,17 @@ Choo.prototype.start = function () {
     }
   }
 
-  this._tree = this.router(createLocation())
+  var location = createLocation()
+  this._tree = this.router(location)
+  assert.ok(this._tree, 'choo.start: no valid DOM node returned for location ' + location)
+
   this.emitter.prependListener('render', nanoraf(function () {
     var renderTiming = nanotiming('choo.render')
     var newTree = self.router(createLocation())
 
     var morphTiming = nanotiming('choo.morph')
     self._tree = nanomorph(self._tree, newTree)
+    assert.ok(self._tree, 'choo.render: no valid DOM node returned for location ' + location)
     morphTiming()
 
     renderTiming()
@@ -103,6 +113,7 @@ Choo.prototype.start = function () {
 
 Choo.prototype.mount = function mount (selector) {
   assert.equal(typeof window, 'object', 'choo.mount: window was not found. .mount() must be called in a browser, use .toString() if running in Node')
+  assert.equal(typeof selector, 'string', 'choo.mount: selector should be type string')
 
   var self = this
 
@@ -130,9 +141,10 @@ Choo.prototype.toString = function (location, state) {
   this.state = state || {}
 
   assert.equal(typeof location, 'string', 'choo.toString: location should be type string')
-  assert.equal(typeof state, 'object', 'choo.toString: state should be type object')
+  assert.equal(typeof this.state, 'object', 'choo.toString: state should be type object')
 
   var html = this.router(location)
+  assert.ok(html, 'choo.toString: no valid value returned for the route ' + location)
   return html.toString()
 }
 
