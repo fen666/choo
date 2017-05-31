@@ -43,7 +43,7 @@ Choo.prototype.route = function (route, handler) {
       var res = handler(self.state, function (eventName, data) {
         self.emitter.emit(eventName, data)
       })
-      routeTiming()
+      routeTiming(self._trace.bind(self))
       return res
     }
   })
@@ -53,7 +53,7 @@ Choo.prototype.use = function (cb) {
   assert.equal(typeof cb, 'function', 'choo.use: cb should be type function')
   var endTiming = nanotiming('choo.use')
   cb(this.state, this.emitter, this)
-  endTiming()
+  endTiming(this._trace.bind(this))
 }
 
 Choo.prototype.start = function () {
@@ -99,9 +99,9 @@ Choo.prototype.start = function () {
     var morphTiming = nanotiming('choo.morph')
     self._tree = nanomorph(self._tree, newTree)
     assert.ok(self._tree, 'choo.render: no valid DOM node returned for location ' + location)
-    morphTiming()
+    morphTiming(self._trace.bind(self))
 
-    renderTiming()
+    renderTiming(self._trace.bind(self))
   }))
 
   documentReady(function () {
@@ -126,14 +126,14 @@ Choo.prototype.mount = function mount (selector) {
 
     var morphTiming = nanotiming('choo.morph')
     var resultTree = nanomorph(root, newTree)
-    morphTiming()
+    morphTiming(self._trace.bind(self))
 
     assert.equal(resultTree, root, 'choo.mount: The target node <' +
       resultTree.nodeName.toLowerCase() + '> is not the same type as the new node <' +
       newTree.nodeName.toLowerCase() + '>.')
 
     self._tree = root
-    renderTiming()
+    renderTiming(self._trace.bind(self))
   })
 }
 
@@ -146,6 +146,11 @@ Choo.prototype.toString = function (location, state) {
   var html = this.router(location)
   assert.ok(html, 'choo.toString: no valid value returned for the route ' + location)
   return html.toString()
+}
+
+Choo.prototype._trace = function (timing, name) {
+  timing.__name = name
+  this.emitter.emit('trace', timing)
 }
 
 function scrollIntoView () {
